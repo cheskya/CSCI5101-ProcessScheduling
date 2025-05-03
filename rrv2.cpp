@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <deque>
-#include <algorithm>
+#include <algorithm> // For sort
 using namespace std;
 
 struct Process {
@@ -34,84 +34,121 @@ struct Schedule {
     }
 };
 
-
 bool compareArrival(const Process& a, const Process& b) {
     return a.arrival < b.arrival;
 }
+
 //https://stackoverflow.com/questions/49147095/sort-according-to-arrival-time-in-fcfs-scheduling-algorithm
 vector<Schedule> round_robin(vector<Process>& processes, int quantum) {
-    sort(processes.begin(), processes.end(), compareArrival); 
+    sort(processes.begin(), processes.end(), compareArrival);
+
     vector<Schedule> chart;
     deque<Process*> queue;
-    int current_time = 0; 
+    int current_time = 0;
     int completed = 0;
+    int n = processes.size();
+    vector<bool> arrived(n + 1, false);  //has alr arrived before?
 
-    vector<bool> arrived(processes.size(), false);  //has alr arrived before?
-    while (completed < processes.size()) {
-
-        for (auto& process : processes) {
-            if (process.arrival <= current_time && !arrived[process.index]) {
-                queue.push_back(&process);
-                arrived[process.index] = true;
+    while (completed < n) {
+        for (int i = 0; i < n; i++) {
+            if (processes[i].arrival <= current_time && !arrived[processes[i].index]) {
+                
+                bool inserted = false;
+                for (auto it = queue.begin(); it != queue.end(); ++it) {
+                    if (processes[i].priority > (*it)->priority) {
+                        queue.insert(it, &processes[i]);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted)
+                    queue.push_back(&processes[i]);
+                arrived[processes[i].index] = true;
             }
         }
 
         //just in case there's nothing
         if (queue.empty()) {
-            current_time++; 
+            current_time++;
             continue;
         }
 
         Process* process = queue.front();
         queue.pop_front();
-        int duration = min(quantum, process->remaining); // set quantum len
-        process->remaining -= duration;
-        current_time += duration;
 
-        chart.push_back(Schedule(current_time - duration, process->index, duration, process->remaining == 0));
+        int duration = min(quantum, process->remaining); // set quantum len
+        int end_time = current_time + duration;
+        bool finished = (process->remaining <= quantum);
+
+        chart.push_back(Schedule(current_time, process->index, duration, finished));
+
+        process->remaining -= duration;
+        current_time = end_time;
+
+        for (int i = 0; i < n; i++) {
+            if (processes[i].arrival > (current_time - duration) &&
+                processes[i].arrival <= current_time &&
+                !arrived[processes[i].index]) {
+                bool inserted = false;
+                for (auto it = queue.begin(); it != queue.end(); ++it) {
+                    if (processes[i].priority > (*it)->priority) {
+                        queue.insert(it, &processes[i]);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted)
+                    queue.push_back(&processes[i]);
+                arrived[processes[i].index] = true;
+            }
+        }
 
         if (process->remaining > 0)
             queue.push_back(process);
         else
             completed++;
-
     }
 
     return chart;
 }
 
-void output(int test_case, const vector<Schedule>& chart) {
-    cout << test_case << endl;
+void output(int test, const vector<Schedule>& chart) {
+    cout << test << endl;
     for (const auto& block : chart) {
-        cout << block.time << " " << block.num << " " << block.duration << (block.finished ? "X" : "") << endl;
+        cout << block.time << " " << block.num << " " << block.duration;
+        if (block.finished)
+            cout << "X";
+        cout << endl;
     }
 }
 
 int main() {
-    int T; // test case
+    int T;
     cin >> T;
-    while (T--) {
-        int x, quantum;
+    for (int t = 1; t <= T; t++) {
+        int x;
+        int quantum;
         string algo;
         cin >> x >> algo >> quantum;
+
         vector<Process> processes;
-        
         for (int i = 1; i <= x; i++) {
             
             int a;
-            int b;
+            int b; 
             int p;
-
+            
             cin >> a >> b >> p;
-            processes.push_back(Process(i, a, b, p));
+            processes.emplace_back(i, a, b, p);
         }
 
         if (algo == "RR") {
             vector<Schedule> chart = round_robin(processes, quantum);
-            output(T, chart);
+            output(t, chart);
         } else {
             cout << "Algorithm " << algo << " does not exist." << endl;
         }
     }
+
     return 0;
 }
