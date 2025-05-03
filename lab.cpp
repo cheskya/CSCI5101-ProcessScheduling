@@ -1,89 +1,53 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
+
+#include <limits.h>
+
+#include "structs.h"
+#include "utilfuncs.h"
+#include "fcfs.h"
+#include "roundrobin.h"
 
 using namespace std;
 
-vector<string> getArgs(string argLine);
-vector<vector<string>> useFCFS(vector<vector<string>> processes);
-vector<vector<string>> useSJF(vector<vector<string>> processes);
-vector<vector<string>> useSRTF(vector<vector<string>> processes);
-vector<vector<string>> usePriority(vector<vector<string>> processes);
-vector<vector<string>> useRoundRobin(vector<vector<string>> processes, int timeQuantum);
-
 int main(int argc, char* argv[]) {
-  string programLine;
-  vector<string> programArgs;
+  int caseNum;
+  cin >> caseNum;
 
-  getline(cin, programLine);
-  programArgs = getArgs(programLine);
+  for (int t = 1; t <= caseNum; t++) {
+    int testNum;
+    int quantum;
+    string algo;
 
-  int caseNum = stoi(programArgs.at(0));
+    cin >> testNum >> algo;
 
-  if (caseNum == 0) {
-    printf("No arguments! Exiting...\n");
-    exit(1);
-  }
-
-  // PROCESSING of each test case
-  for (int i = 0; i < caseNum; i++) {
-    string caseLine;
-    vector<string> caseArgs;
-    vector<vector<string>> initProcesses, finalProcesses;
-    
-    string caseType;
-    int timeQuantum;
-
-    getline(cin, caseLine);
-    caseArgs = getArgs(caseLine);
-
-    int processNum = stoi(caseArgs.at(0));
-    caseType = caseArgs.at(1);
-    if (caseType == "RR") {
-      timeQuantum = stoi(caseArgs.at(2));
+    if (algo == "RR") {
+        cin >> quantum;
     }
 
-    if (processNum == 0) {
-      printf("No processes! Exiting...\n");
-      exit(1);
-    }
-    
-    // PROCESSING of each process
-    for (int j; j < processNum; j++) {
-      string processLine;
-      vector<string> processArgs;
+    vector<Process> processes;
 
-      int arrivalTime, burstTime, priority;
-
-      getline(cin, processLine);
-      processArgs = getArgs(processLine);
-
-      initProcesses.push_back(processArgs);
+    for (int i = 1; i <= testNum; i++) {
+      int arrival;
+      int burst; 
+      int priority;
+      
+      cin >> arrival >> burst >> priority;
+      processes.emplace_back(i, arrival, burst, priority);
     }
 
-    // calculation here
-    // insert function (will fix later, just change accrdg to what you're doing)
-    finalProcesses = useFCFS(initProcesses);
+    if (algo == "RR") {
+      vector<Schedule> chart = roundRobin(processes, quantum);
+      output(t, chart);
+    } else if (algo == "FCFS") {
+      vector<Schedule> chart = fcfs(processes);
+      output(t, chart);
+    } else {
+      cout << "Algorithm " << algo << " does not exist." << endl;
+    }
   }
 
   return 0;
 }
-
-// https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
-vector<string> getArgs(string argLine) {
-  size_t startPos = 0, endPos;
-  string delimiter = " ";
-  string arg;
-  vector<string> args;
-
-  while((endPos = argLine.find(delimiter, startPos)) != string::npos) {
-    arg = argLine.substr(startPos, (endPos - startPos));
-    startPos = endPos + 1;
-    args.push_back(arg);    
-  }
-
-  args.push_back(argLine.substr(startPos));
-  return args;
-}
-
-// put scheduling algorithm functions here
