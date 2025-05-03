@@ -1,10 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <queue>
 #include <thread>
-
-#include <limits.h>
 
 using namespace std;
 
@@ -60,11 +57,12 @@ vector<Schedule> sjf(vector<Process>& processes) {
     int shortestBurstIndex;
 
     Process* nextProcess;
+    sort(processQueue.begin(), processQueue.end(), compareArrival);
 
     // find the process in queue with the smallest burst
     for (int i = 0; i < (int) processQueue.size(); i++) {
       int burst = processQueue[i].burst;
-      if (burst <= shortestBurst) {
+      if (burst < shortestBurst) {
         shortestBurst = burst;
         shortestBurstIndex = i;
         nextProcess = &processQueue[i];
