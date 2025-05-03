@@ -9,6 +9,7 @@
 #include "utilfuncs.h"
 #include "fcfs.h"
 #include "roundrobin.h"
+#include "sjf.h"
 
 using namespace std;
 
@@ -43,6 +44,9 @@ int main(int argc, char* argv[]) {
       output(t, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
+      output(t, chart);
+    } else if (algo == "SJF") {
+      vector<Schedule> chart = sjf(processes);
       output(t, chart);
     } else {
       cout << "Algorithm " << algo << " does not exist." << endl;

@@ -18,18 +18,13 @@ using namespace std;
 7. repeat steps 2-6
 */
 
-vector<vector<string>> useSJF(vector<vector<string>> processes) {
+vector<Schedule> sjf(vector<Process>& processes) {
 
-  vector<vector<string>> result;
-
-  // save index
-  for (int i = 0; i < (int) processes.size(); i++) {
-    processes.at(i).push_back(to_string(i+1));
-  }
+  vector<Schedule> result;
 
   int currentTime = 0; // in ns
   int processNum = (int) processes.size();
-  vector<vector<string>> processQueue;
+  vector<Process> processQueue;
 
   // go through each point in time
   while (true) {
@@ -42,12 +37,11 @@ vector<vector<string>> useSJF(vector<vector<string>> processes) {
     // if no more processes available, skip this step
     if ((int) processes.size() > 0) {
       for (int i = 0; i < (int) processes.size(); i++) {
-        int arrival = stoi(processes.at(i).at(0));
-        vector<string> temp;
+        int arrival = processes[i].arrival;
         if (arrival <= currentTime) {
-          processQueue.push_back(processes.at(i));
-          temp = processes.at(i);
-          processes.at(i) = processes.back();
+          processQueue.push_back(processes[i]);
+          Process temp = processes[i];
+          processes[i] = processes.back();
           processes.back() = temp;
           processes.pop_back();
           i--;
@@ -65,27 +59,26 @@ vector<vector<string>> useSJF(vector<vector<string>> processes) {
     int shortestBurst = INT_MAX;
     int shortestBurstIndex;
 
+    Process* nextProcess;
+
     // find the process in queue with the smallest burst
     for (int i = 0; i < (int) processQueue.size(); i++) {
-      int burst = stoi(processQueue.at(i).at(1));
+      int burst = processQueue[i].burst;
       if (burst <= shortestBurst) {
         shortestBurst = burst;
         shortestBurstIndex = i;
+        nextProcess = &processQueue[i];
       }
     }
 
     // add next process to result, then remove from queue
-    vector<string> resultProcess;
-    resultProcess = {to_string(currentTime), processQueue.at(shortestBurstIndex).at(3), processQueue.at(shortestBurstIndex).at(1) + "X"};
-    currentTime += stoi(processQueue.at(shortestBurstIndex).at(1));
-    result.push_back(resultProcess);
+    result.push_back(Schedule(currentTime, nextProcess->index, nextProcess->burst, true));
+    currentTime += nextProcess->burst;
 
-    vector<string> temp;
-    temp = processQueue.at(shortestBurstIndex);
-    processQueue.at(shortestBurstIndex) = processQueue.back();
+    Process temp = *nextProcess;
+    processQueue[shortestBurstIndex] = processQueue.back();
     processQueue.back() = temp;
     processQueue.pop_back();
-
   }
 
   return result;
