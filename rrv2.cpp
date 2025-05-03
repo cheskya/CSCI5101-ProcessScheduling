@@ -112,6 +112,22 @@ vector<Schedule> round_robin(vector<Process>& processes, int quantum) {
     return chart;
 }
 
+vector<Schedule> fcfs(vector<Process>& processes) {
+    sort(processes.begin(), processes.end(), compareArrival); 
+    vector<Schedule> chart;
+    int current_time = 0;
+
+    for (auto& process : processes) {
+        if (current_time < process.arrival) {
+            current_time = process.arrival;
+        }
+        chart.push_back(Schedule(current_time, process.index, process.burst, true));
+        current_time += process.burst;
+    }
+
+    return chart;
+}
+
 void output(int test, const vector<Schedule>& chart) {
     cout << test << endl;
     for (const auto& block : chart) {
@@ -129,8 +145,12 @@ int main() {
         int x;
         int quantum;
         string algo;
-        cin >> x >> algo >> quantum;
+        cin >> x >> algo;
 
+        if (algo == "RR") {
+            cin >> quantum;
+        }
+ 
         vector<Process> processes;
         for (int i = 1; i <= x; i++) {
             
@@ -145,6 +165,9 @@ int main() {
         if (algo == "RR") {
             vector<Schedule> chart = round_robin(processes, quantum);
             output(t, chart);
+        } else if (algo == "FCFS") {
+            vector<Schedule> chart = fcfs(processes);
+            output(T, chart);
         } else {
             cout << "Algorithm " << algo << " does not exist." << endl;
         }
