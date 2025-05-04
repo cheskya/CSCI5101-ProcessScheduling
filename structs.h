@@ -5,6 +5,12 @@ struct Process {
     int remaining;
     int priority;
 
+    int first_response = -1; // -1 = not yet set
+    int termination = 0;
+    int waiting = 0;
+    int turnaround = 0;
+    int response_time = -1; // -1 = not yet set
+
     Process(int i, int a, int b, int p) {
         index = i;
         arrival = a;
