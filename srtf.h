@@ -3,7 +3,6 @@
 #include <deque>
 #include <algorithm>
 #include <limits.h>
-#include <thread>
 #include <cmath>
 
 using namespace std;
@@ -26,7 +25,6 @@ vector<Schedule> srtf(vector<Process>& processes) {
   }
 
   while (true) {
-    printf("Current time: %d\n", currentTime);
     if (processCompleted == processNum) {
       break;
     }
@@ -34,7 +32,6 @@ vector<Schedule> srtf(vector<Process>& processes) {
     int shortestBurst = INT_MAX;
     bool hasProcess = false;
 
-    // find the process with the shortest remaining burst at the current time
     for (int i = 0; i < (int) processQueue.size(); i++) {
       int burst = processQueue.at(i)->remaining;
       int arrival = processQueue.at(i)->arrival;
@@ -58,7 +55,6 @@ vector<Schedule> srtf(vector<Process>& processes) {
 
     int futureArrival = currentTime + currentProcess->remaining;
 
-    // find all processes that may interrupt the current process
     for (int i = 0; i < (int) processQueue.size(); i++) {
       int remaining = processQueue.at(i)->remaining;
       int index = processQueue.at(i)->index;
@@ -70,20 +66,11 @@ vector<Schedule> srtf(vector<Process>& processes) {
     int processTime;
     bool hasJustStarted = false;
 
-    // check next processses
     while (true) {
-      // there are next processes that can interrupt
       if (!processInterruptQueue.empty()) {
-        int closestArrival = INT_MAX;
-
         sort(processInterruptQueue.begin(), processInterruptQueue.end(), [](Process* a, Process* b) { return a->arrival < b->arrival; });
         Process* nextProcess = processInterruptQueue.front();
         
-        printf("In interrupt queue:\n");
-        for (int i = 0; i < (int) processInterruptQueue.size(); i++) {
-          printf("Index %d\n", processInterruptQueue.at(i)->index);
-        }
-
         int nextArrival = nextProcess->arrival;
         if (nextProcess->arrival <= currentTime) {
           nextArrival = currentTime;
@@ -91,7 +78,6 @@ vector<Schedule> srtf(vector<Process>& processes) {
         int futureBurst = currentProcess->remaining - (nextArrival - currentTime);
         processTime = currentProcess->remaining - futureBurst;
 
-        // next process will interrupt
         if (nextProcess->remaining < futureBurst) {
           hasJustStarted = (currentProcess->remaining == currentProcess->burst) ? true : false;
           processTime = nextArrival - currentTime;
@@ -102,12 +88,10 @@ vector<Schedule> srtf(vector<Process>& processes) {
           processInterruptQueue.clear();
           break;
         }
-        // next process won't interrupt
         else {
           processInterruptQueue.pop_front();
         }
       }
-      // there are no next processes that can interrupt
       else {
         hasJustStarted = (currentProcess->remaining == currentProcess->burst) ? true : false;
         processCompleted += 1;
