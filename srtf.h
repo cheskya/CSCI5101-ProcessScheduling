@@ -26,6 +26,7 @@ vector<Schedule> srtf(vector<Process>& processes) {
   }
 
   while (true) {
+    printf("Current time: %d\n", currentTime);
     if (processCompleted == processNum) {
       break;
     }
@@ -55,7 +56,7 @@ vector<Schedule> srtf(vector<Process>& processes) {
 
     Process* currentProcess = processQueue.front();
 
-    int futureArrival = currentTime + currentProcess->burst;
+    int futureArrival = currentTime + currentProcess->remaining;
 
     // find all processes that may interrupt the current process
     for (int i = 0; i < (int) processQueue.size(); i++) {
@@ -74,16 +75,13 @@ vector<Schedule> srtf(vector<Process>& processes) {
       // there are next processes that can interrupt
       if (!processInterruptQueue.empty()) {
         int closestArrival = INT_MAX;
-        Process* nextProcess = processInterruptQueue.front();
 
+        sort(processInterruptQueue.begin(), processInterruptQueue.end(), [](Process* a, Process* b) { return a->arrival < b->arrival; });
+        Process* nextProcess = processInterruptQueue.front();
+        
+        printf("In interrupt queue:\n");
         for (int i = 0; i < (int) processInterruptQueue.size(); i++) {
-          int arrival = processQueue.at(i)->arrival;
-          if (arrival <= closestArrival) {
-            closestArrival = arrival;
-            Process* temp = processInterruptQueue.at(i);
-            processInterruptQueue.at(i) = processInterruptQueue.front();
-            processInterruptQueue.front() = temp;
-          }
+          printf("Index %d\n", processInterruptQueue.at(i)->index);
         }
 
         int nextArrival = nextProcess->arrival;
