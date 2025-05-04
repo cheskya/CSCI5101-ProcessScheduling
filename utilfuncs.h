@@ -13,7 +13,7 @@ void output(int test, const vector<Schedule>& chart) {
 void printcriteria(const vector<Process>& processes, const vector<Schedule>& chart) {
     int active_time = 0, total_waiting_time = 0, total_turnaround_time = 0, total_response_time = 0; //cumulative
 
-    int first_arrival = 0;
+    int first_arrival = INT_MAX;
     int last_termination = 0;
 
     for (auto& process : processes) {
@@ -22,7 +22,7 @@ void printcriteria(const vector<Process>& processes, const vector<Schedule>& cha
         total_turnaround_time += process.turnaround;
         total_response_time += process.response_time;
 
-        if (process.arrival <= first_arrival)               //for CPU utilisation
+        if (process.arrival < first_arrival)               //for CPU utilisation
             first_arrival = process.arrival;
         if (process.termination > last_termination)
             last_termination = process.termination;
@@ -35,7 +35,7 @@ void printcriteria(const vector<Process>& processes, const vector<Schedule>& cha
     double avg_response_time = (double) total_response_time / processes.size();
 
     cout << setprecision(0) << fixed;
-    cout << "CPU Utilisation: " << cpu_utilization << "%" << endl;
+    cout << "CPU Utilization: " << cpu_utilization << "%" << endl;
     cout << setprecision(2) << fixed;
     cout << "Throughput: " << throughput << " processes/second" << endl;
     for (auto& process : processes) {
