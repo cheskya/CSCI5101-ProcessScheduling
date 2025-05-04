@@ -36,10 +36,19 @@ void printcriteria(const vector<Process>& processes, const vector<Schedule>& cha
 
     cout << "CPU Utilisation: " << cpu_utilization << "%" << endl;
     cout << setprecision(2) << fixed;
-    cout << "Throughput: " << throughput << endl;
-    cout << "Waiting Time: " << avg_waiting_time << "ns" << endl;
-    cout << "Turnaround Time: " << avg_turnaround_time << "ns" << endl;
-    cout << "Response Time: " << avg_response_time << "ns" << endl;
+    cout << "Throughput: " << throughput << " processes/second" << endl;
+    for (auto& process : processes) {
+        cout << "Process " << process.index << ": " << process.waiting << "ns" <<endl;
+    }
+    cout << "Average waiting time = " << avg_waiting_time << "ns" << endl;
+    for (auto& process : processes) {
+        cout << "Process " << process.index << ": " << process.turnaround << "ns" <<endl;
+    }
+    cout << "Average turnaround time = " << avg_turnaround_time << "ns" << endl;
+    for (auto& process : processes) {
+        cout << "Process " << process.index << ": " << process.response_time << "ns" <<endl;
+    }
+    cout << "Average response time = " << avg_response_time << "ns" << endl;
 }
 
 bool compareArrival(const Process& a, const Process& b) {
