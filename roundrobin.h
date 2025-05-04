@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <deque>
-#include <algorithm> // For sort
+#include <algorithm> 
 
 using namespace std;
 
@@ -23,9 +23,9 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
             if (processes[i].arrival <= current_time && !arrived[processes[i].index]) {
                 
                 bool inserted = false;
-                for (auto it = queue.begin(); it != queue.end(); ++it) {
-                    if (processes[i].priority > (*it)->priority) {
-                        queue.insert(it, &processes[i]);
+                for (auto j = queue.begin(); j != queue.end(); ++j) {
+                    if (processes[i].priority > (*j)->priority) {
+                        queue.insert(j, &processes[i]);
                         inserted = true;
                         break;
                     }
@@ -54,8 +54,8 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
 
         active_time += duration;
 
-        process->waiting = current_time - process->arrival;   
         process->turnaround = end_time - process->arrival;
+        process->waiting = process->turnaround - process->burst;
         process->termination = end_time; 
         process->response_time = process->first_response - process->arrival;
 
@@ -65,10 +65,11 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
         current_time = end_time;
         last_termination = max(last_termination, end_time);
 
-        if (process->remaining > 0)
+        if (process->remaining > 0) {
             queue.push_back(process);
-        else
+        }  else {
             completed++;
+        }
     }
 
     return chart;
