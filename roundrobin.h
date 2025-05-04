@@ -5,7 +5,6 @@
 
 using namespace std;
 
-//https://stackoverflow.com/questions/49147095/sort-according-to-arrival-time-in-fcfs-scheduling-algorithm
 vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
     sort(processes.begin(), processes.end(), compareArrival);
 
@@ -14,7 +13,10 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
     int current_time = 0;
     int completed = 0;
     int n = processes.size();
-    vector<bool> arrived(n + 1, false);  //has alr arrived before?
+    int active_time = 0; 
+    int first_arrival = processes[0].arrival; 
+    int last_termination = 0;
+    vector<bool> arrived(n + 1, false);  
 
     while (completed < n) {
         for (int i = 0; i < n; i++) {
@@ -34,7 +36,6 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
             }
         }
 
-        //just in case there's nothing
         if (queue.empty()) {
             current_time++;
             continue;
@@ -43,14 +44,26 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
         Process* process = queue.front();
         queue.pop_front();
 
-        int duration = min(quantum, process->remaining); // set quantum len
+        if (process->first_response == -1) {
+            process->first_response = current_time; 
+        }
+
+        int duration = min(quantum, process->remaining);
         int end_time = current_time + duration;
         bool finished = (process->remaining <= quantum);
+
+        active_time += duration;
+
+        process->waiting = current_time - process->arrival;   
+        process->turnaround = end_time - process->arrival;
+        process->termination = end_time; 
+        process->response_time = process->first_response - process->arrival;
 
         chart.push_back(Schedule(current_time, process->index, duration, finished));
 
         process->remaining -= duration;
         current_time = end_time;
+        last_termination = max(last_termination, end_time);
 
         for (int i = 0; i < n; i++) {
             if (processes[i].arrival > (current_time - duration) &&
