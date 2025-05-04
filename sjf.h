@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <deque>
 #include <limits.h>
 
 using namespace std;
@@ -20,28 +22,22 @@ vector<Schedule> sjf(vector<Process>& processes) {
 
   int currentTime = 0; // in ns
   int processNum = (int) processes.size();
-  vector<Process> processQueue;
+  deque<Process*> processQueue;
 
   // go through each point in time
   while (true) {
+    printf("Current time: %d\n", currentTime);
     // if resulting array has all processes, break the loop
     if ((int) result.size() == processNum) {
       break;
     }
 
     // check processes available at the current time
-    // if no more processes available, skip this step
-    if ((int) processes.size() > 0) {
-      for (int i = 0; i < (int) processes.size(); i++) {
-        int arrival = processes[i].arrival;
-        if (arrival <= currentTime) {
-          processQueue.push_back(processes[i]);
-          Process temp = processes[i];
-          processes[i] = processes.back();
-          processes.back() = temp;
-          processes.pop_back();
-          i--;
-        }
+    for (int i = 0; i < (int) processes.size(); i++) {
+      int arrival = processes.at(i).arrival;
+      int remaining = processes.at(i).remaining;
+      if (arrival <= currentTime && remaining > 0) {
+        processQueue.push_back(&processes.at(i));
       }
     }
 
@@ -52,30 +48,26 @@ vector<Schedule> sjf(vector<Process>& processes) {
       continue;
     }
 
-    int shortestBurst = INT_MAX;
-    int shortestBurstIndex;
+    sort(processQueue.begin(), processQueue.end(), [](Process* a, Process* b) { return a->burst < b->burst; });
+    Process* currentProcess = processQueue.front();
 
-    Process* nextProcess;
-    sort(processQueue.begin(), processQueue.end(), compareArrival);
-
-    // find the process in queue with the smallest burst
+    printf("Processes in queue:\n");
     for (int i = 0; i < (int) processQueue.size(); i++) {
-      int burst = processQueue[i].burst;
-      if (burst < shortestBurst) {
-        shortestBurst = burst;
-        shortestBurstIndex = i;
-        nextProcess = &processQueue[i];
-      }
+      printf("Index %d with arrival %d and remaining %d\n", processQueue.at(i)->index, processQueue.at(i)->arrival, processQueue.at(i)->remaining);
     }
 
-    // add next process to result, then remove from queue
-    result.push_back(Schedule(currentTime, nextProcess->index, nextProcess->burst, true));
-    currentTime += nextProcess->burst;
+    printf("Current process is index %d with arrival %d and remaining %d\n", currentProcess->index, currentProcess->arrival, currentProcess->remaining);
 
-    Process temp = *nextProcess;
-    processQueue[shortestBurstIndex] = processQueue.back();
-    processQueue.back() = temp;
-    processQueue.pop_back();
+    // add next process to result, then remove from queue
+    result.push_back(Schedule(currentTime, currentProcess->index, currentProcess->burst, true));
+    currentProcess->remaining = 0;
+    currentProcess->first_response = currentTime;
+    currentProcess->termination = currentTime + currentProcess->burst;
+    currentProcess->turnaround = currentProcess->termination - currentProcess->arrival; // compute turnaround
+    currentProcess->waiting = currentProcess->turnaround - currentProcess->burst; // compute waiting
+    currentProcess->response_time = currentProcess->first_response - currentProcess->arrival; // compute response
+    currentTime += currentProcess->burst;
+    processQueue.clear();
   }
 
   return result;
