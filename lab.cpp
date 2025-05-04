@@ -52,8 +52,7 @@ int main(int argc, char* argv[]) {
       vector<Schedule> chart = priority(processes);
       output(t, chart);
       printcriteria(processes, chart);
-    } 
-    else {
+    } else {
       cout << "Algorithm " << algo << " does not exist." << endl;
     }
   }
