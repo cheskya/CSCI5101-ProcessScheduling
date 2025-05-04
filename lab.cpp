@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <iomanip>
 
 #include <limits.h>
 
@@ -43,9 +44,11 @@ int main(int argc, char* argv[]) {
     if (algo == "RR") {
       vector<Schedule> chart = roundRobin(processes, quantum);
       output(t, chart);
+      // printcriteria(processes, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
       output(t, chart);
+      printcriteria(processes, chart);
     } else if (algo == "SJF") {
       vector<Schedule> chart = sjf(processes);
       output(t, chart);
