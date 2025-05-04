@@ -14,7 +14,6 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
     int completed = 0;
     int n = processes.size();
     int active_time = 0; 
-    int last_termination = 0;
     vector<bool> arrived(n + 1, false);  
 
     while (completed < n) {
@@ -52,7 +51,6 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
 
         process->remaining -= duration;
         current_time = end_time;
-        last_termination = max(last_termination, end_time);
 
         if (process->remaining > 0) {
             queue.push_back(process);
