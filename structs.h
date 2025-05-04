@@ -11,6 +11,8 @@ struct Process {
     int turnaround = 0;
     int response_time = -1; // -1 = not yet set
 
+    bool in_ready_queue = false;
+
     Process(int i, int a, int b, int p) {
         index = i;
         arrival = a;

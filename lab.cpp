@@ -10,6 +10,7 @@
 #include "utilfuncs.h"
 #include "fcfs.h"
 #include "roundrobin.h"
+#include "priority.h"
 #include "sjf.h"
 #include "srtf.h"
 
@@ -47,6 +48,10 @@ int main(int argc, char* argv[]) {
       printcriteria(processes, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
+      output(t, chart);
+      printcriteria(processes, chart);
+    } else if (algo == "P") {
+      vector<Schedule> chart = priority(processes);
       output(t, chart);
       printcriteria(processes, chart);
     } else if (algo == "SJF") {
