@@ -65,24 +65,6 @@ vector<Schedule> roundRobin(vector<Process>& processes, int quantum) {
         current_time = end_time;
         last_termination = max(last_termination, end_time);
 
-        for (int i = 0; i < n; i++) {
-            if (processes[i].arrival > (current_time - duration) &&
-                processes[i].arrival <= current_time &&
-                !arrived[processes[i].index]) {
-                bool inserted = false;
-                for (auto it = queue.begin(); it != queue.end(); ++it) {
-                    if (processes[i].priority > (*it)->priority) {
-                        queue.insert(it, &processes[i]);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted)
-                    queue.push_back(&processes[i]);
-                arrived[processes[i].index] = true;
-            }
-        }
-
         if (process->remaining > 0)
             queue.push_back(process);
         else
