@@ -17,8 +17,8 @@ vector<Schedule> fcfs(vector<Process>& processes) {
 
         process.first_response = time_elapsed;
         process.termination = time_elapsed + process.burst;
-        process.waiting = process.termination - process.arrival - process.burst;
         process.turnaround = process.termination - process.arrival;
+        process.waiting = process.turnaround - process.burst;
         process.response_time = process.first_response - process.arrival;
         
         chart.push_back(Schedule(time_elapsed, process.index, process.burst, true));

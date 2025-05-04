@@ -34,6 +34,7 @@ void printcriteria(const vector<Process>& processes, const vector<Schedule>& cha
     double avg_turnaround_time = (double) total_turnaround_time / processes.size();
     double avg_response_time = (double) total_response_time / processes.size();
 
+    cout << setprecision(0) << fixed;
     cout << "CPU Utilisation: " << cpu_utilization << "%" << endl;
     cout << setprecision(2) << fixed;
     cout << "Throughput: " << throughput << endl;
@@ -44,4 +45,8 @@ void printcriteria(const vector<Process>& processes, const vector<Schedule>& cha
 
 bool compareArrival(const Process& a, const Process& b) {
     return a.arrival < b.arrival;
+}
+
+bool comparePriority(const Process& a, const Process& b) {
+    return a.priority > b.priority;
 }

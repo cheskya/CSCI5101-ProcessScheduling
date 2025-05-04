@@ -10,6 +10,7 @@
 #include "utilfuncs.h"
 #include "fcfs.h"
 #include "roundrobin.h"
+#include "priority.h"
 
 using namespace std;
 
@@ -47,7 +48,12 @@ int main(int argc, char* argv[]) {
       vector<Schedule> chart = fcfs(processes);
       output(t, chart);
       printcriteria(processes, chart);
-    } else {
+    } else if (algo == "P") {
+      vector<Schedule> chart = priority(processes);
+      output(t, chart);
+      printcriteria(processes, chart);
+    } 
+    else {
       cout << "Algorithm " << algo << " does not exist." << endl;
     }
   }
