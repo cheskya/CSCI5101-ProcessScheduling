@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     if (algo == "RR") {
       vector<Schedule> chart = roundRobin(processes, quantum);
       output(t, chart);
-      // printcriteria(processes, chart);
+      printcriteria(processes, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
       output(t, chart);
