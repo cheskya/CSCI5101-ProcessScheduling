@@ -67,6 +67,7 @@ vector<Schedule> srtf(vector<Process>& processes) {
     }
 
     int processTime;
+    bool hasJustStarted = false;
 
     // check next processses
     while (true) {
@@ -94,6 +95,7 @@ vector<Schedule> srtf(vector<Process>& processes) {
 
         // next process will interrupt
         if (nextProcess->remaining < futureBurst) {
+          hasJustStarted = (currentProcess->remaining == currentProcess->burst) ? true : false;
           processTime = nextArrival - currentTime;
           timeToAdd = processTime;
           currentProcess->remaining = futureBurst;
@@ -109,6 +111,7 @@ vector<Schedule> srtf(vector<Process>& processes) {
       }
       // there are no next processes that can interrupt
       else {
+        hasJustStarted = (currentProcess->remaining == currentProcess->burst) ? true : false;
         processCompleted += 1;
         processTime = currentProcess->remaining;
         timeToAdd = processTime;
@@ -120,6 +123,16 @@ vector<Schedule> srtf(vector<Process>& processes) {
     }
 
     bool isFinished = (currentProcess->remaining <= 0) ? true : false;
+    if (hasJustStarted) {
+      currentProcess->first_response = currentTime;
+    }
+    if (isFinished) {
+      currentProcess->termination = currentTime + timeToAdd;
+      currentProcess->turnaround = currentProcess->termination - currentProcess->arrival; // compute turnaround
+      currentProcess->waiting = currentProcess->turnaround - currentProcess->burst; // compute waiting
+      currentProcess->response_time = currentProcess->first_response - currentProcess->arrival; // compute response
+    }
+
     chart.push_back(Schedule(currentTime, currentProcess->index, processTime, isFinished));
     currentTime += timeToAdd;
   }

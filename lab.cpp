@@ -55,6 +55,7 @@ int main(int argc, char* argv[]) {
     } else if (algo == "SRTF") {
       vector<Schedule> chart = srtf(processes);
       output(t, chart);
+      printcriteria(processes, chart);
     } else {
       cout << "Algorithm " << algo << " does not exist." << endl;
     }
