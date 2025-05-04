@@ -11,6 +11,8 @@
 #include "fcfs.h"
 #include "roundrobin.h"
 #include "priority.h"
+#include "sjf.h"
+#include "srtf.h"
 
 using namespace std;
 
@@ -43,13 +45,21 @@ int main(int argc, char* argv[]) {
     if (algo == "RR") {
       vector<Schedule> chart = roundRobin(processes, quantum);
       output(t, chart);
-      // printcriteria(processes, chart);
+      printcriteria(processes, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
       output(t, chart);
       printcriteria(processes, chart);
     } else if (algo == "P") {
       vector<Schedule> chart = priority(processes);
+      output(t, chart);
+      printcriteria(processes, chart);
+    } else if (algo == "SJF") {
+      vector<Schedule> chart = sjf(processes);
+      output(t, chart);
+      printcriteria(processes, chart);
+    } else if (algo == "SRTF") {
+      vector<Schedule> chart = srtf(processes);
       output(t, chart);
       printcriteria(processes, chart);
     } else {
