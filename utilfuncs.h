@@ -59,3 +59,7 @@ bool compareArrival(const Process& a, const Process& b) {
 bool comparePriority(const Process& a, const Process& b) {
     return a.priority > b.priority;
 }
+
+bool compareIndex(const Process& a, const Process& b) {
+    return a.index < b.index;
+}

@@ -9,14 +9,13 @@ vector<Schedule> priority(vector<Process>& processes) {
     sort(processes.begin(), processes.end(), compareArrival);
     deque<Process> ready_queue;
     vector<Schedule> chart;
-    vector<Process> completed_processes;
-
     vector<Process> remaining_processes = processes;
+
     int time_elapsed = 0;
     int last_pid = -1; // last running process
     int block_start = 0; // for preemption
-    int block_duration = 0; // . .
-    bool block_finished = false; // . .
+    int block_duration = 0;
+    bool block_finished = false;
 
     while (!ready_queue.empty() || !remaining_processes.empty()) {
         // iterate over remaining processes to add to the ready queue
@@ -58,21 +57,21 @@ vector<Schedule> priority(vector<Process>& processes) {
         block_duration++;
         last_pid = current_process.index;
 
-        // If process finishes, update stats and move to completed
+        // if process finishes, update stats and remove it from ready queue
         if (current_process.remaining == 0) {
-            current_process.termination = time_elapsed + 1;
-            current_process.turnaround = current_process.termination - current_process.arrival;
-            current_process.waiting = current_process.turnaround - current_process.burst;
-            current_process.response_time = current_process.first_response - current_process.arrival;
+            Process completed_process = current_process;
+            completed_process.termination = time_elapsed + 1;
+            completed_process.turnaround = completed_process.termination - completed_process.arrival;
+            completed_process.waiting = completed_process.turnaround - completed_process.burst;
+            completed_process.response_time = completed_process.first_response - completed_process.arrival;
 
             block_finished = true;
-            completed_processes.push_back(current_process);
             ready_queue.pop_front();  // remove completed process from ready queue
 
-            // update the processes vector with the completed process information
+            // update the processes vector with the completed process stats
             for (auto& p : processes) {
-                if (p.index == current_process.index) {
-                    p = current_process;  // update the original process with the completed criteria
+                if (p.index == completed_process.index) {
+                    p = completed_process;
                     break;
                 }
             }

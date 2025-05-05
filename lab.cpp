@@ -45,14 +45,17 @@ int main(int argc, char* argv[]) {
     if (algo == "RR") {
       vector<Schedule> chart = roundRobin(processes, quantum);
       output(t, chart);
+      sort(processes.begin(), processes.end(), compareIndex);
       printcriteria(processes, chart);
     } else if (algo == "FCFS") {
       vector<Schedule> chart = fcfs(processes);
       output(t, chart);
+      sort(processes.begin(), processes.end(), compareIndex);
       printcriteria(processes, chart);
     } else if (algo == "P") {
       vector<Schedule> chart = priority(processes);
       output(t, chart);
+      sort(processes.begin(), processes.end(), compareIndex);
       printcriteria(processes, chart);
     } else if (algo == "SJF") {
       vector<Schedule> chart = sjf(processes);
@@ -61,6 +64,7 @@ int main(int argc, char* argv[]) {
     } else if (algo == "SRTF") {
       vector<Schedule> chart = srtf(processes);
       output(t, chart);
+      sort(processes.begin(), processes.end(), compareIndex);
       printcriteria(processes, chart);
     } else {
       cout << "Algorithm " << algo << " does not exist." << endl;
